@@ -74,11 +74,7 @@ function confirmDisable() {
 				<N8nText :bold="true">
 					{{ i18n.baseText('settings.security.workflowReviews.enable.title') }}
 				</N8nText>
-				<N8nPreviewBadge
-					size="xxsmall"
-					docs-url="https://docs.n8n.io/build/manage-workflows/workflow-reviews"
-					data-test-id="security-workflow-reviews-preview-tag"
-				/>
+				<N8nPreviewBadge size="xxsmall" data-test-id="security-workflow-reviews-preview-tag" />
 			</div>
 			<N8nText size="small" color="text-light">
 				{{ i18n.baseText('settings.security.workflowReviews.enable.description') }}

@@ -81,7 +81,6 @@ export default {
 	'codeBlock.expand': 'Expand code',
 	'codeBlock.collapse': 'Collapse code',
 	'previewBadge.preview': 'Preview',
-	'previewBadge.tooltip': 'n8n may still change or remove this feature.',
 	'maturityBadge.docsLink': 'Learn more',
 	'enterpriseReadinessBadge.limited': 'Limited enterprise support',
 	'enterpriseReadinessBadge.tooltip': "Some enterprise capabilities don't cover this feature yet.",

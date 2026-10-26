@@ -137,11 +137,7 @@ onMounted(async () => {
 			<div :class="$style.enabledText">
 				<span :class="$style.titleWithTag">
 					<N8nText bold>{{ i18n.baseText('settings.chatHub.enabled.label') }}</N8nText>
-					<N8nPreviewBadge
-						size="xxsmall"
-						docs-url="https://docs.n8n.io/advanced-ai/chat-hub/"
-						data-test-id="chat-hub-preview-badge"
-					/>
+					<N8nPreviewBadge size="xxsmall" data-test-id="chat-hub-preview-badge" />
 					<N8nEnterpriseReadinessBadge
 						v-if="settingsStore.isEnterprisePlan"
 						size="xxsmall"

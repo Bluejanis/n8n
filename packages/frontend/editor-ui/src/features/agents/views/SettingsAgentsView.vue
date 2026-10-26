@@ -82,10 +82,7 @@ onMounted(async () => {
 					:max-description-lines="3"
 				>
 					<template #titleTrailing>
-						<N8nPreviewBadge
-							size="xxsmall"
-							docs-url="https://docs.n8n.io/build/build-and-manage-agents"
-						/>
+						<N8nPreviewBadge size="xxsmall" />
 					</template>
 					<template #action>
 						<N8nSwitch
