@@ -10,18 +10,32 @@ withDefaults(
 	defineProps<{
 		/** The badge size. Same default as `N8nPreviewBadge`. */
 		size?: BadgeSize;
+		/** Feature documentation page. The tooltip links here. */
+		docsUrl?: string;
 	}>(),
-	{ size: 'xxsmall' },
+	{ size: 'xxsmall', docsUrl: undefined },
 );
 
 const { t } = useI18n();
 </script>
 
 <template>
-	<N8nTooltip :content="t('enterpriseReadinessBadge.tooltip')" placement="top" as-child>
+	<N8nTooltip placement="top" as-child>
 		<N8nBadge variant="outline" :size="size" :class="$style.badge" tabindex="0">
 			{{ t('enterpriseReadinessBadge.limited') }}
 		</N8nBadge>
+		<template #content>
+			<span>{{ t('enterpriseReadinessBadge.tooltip') }}</span>
+			<a
+				v-if="docsUrl"
+				:class="$style.docsLink"
+				:href="docsUrl"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				{{ t('maturityBadge.docsLink') }}
+			</a>
+		</template>
 	</N8nTooltip>
 </template>
 
@@ -35,5 +49,10 @@ const { t } = useI18n();
 	&:focus-visible {
 		@include focus.focus-ring-with-border;
 	}
+}
+
+.docsLink {
+	color: inherit;
+	text-decoration: underline;
 }
 </style>

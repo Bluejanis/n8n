@@ -367,12 +367,12 @@ describe('useSettingsItems', () => {
 			expect(idsOf()).not.toContain('settings-context');
 		});
 
-		it('carries the preview label', () => {
+		it('does not carry a preview label in the sidebar', () => {
 			const item = useSettingsItems().settingsItems.value.find(
 				({ id }) => id === 'settings-context',
 			);
 
-			expect(item?.preview).toBe(true);
+			expect(item !== undefined && 'preview' in item).toBe(false);
 		});
 	});
 

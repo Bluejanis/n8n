@@ -37,8 +37,11 @@ export type SettingsSectionId =
 	| 'operations'
 	| 'billing';
 
-/** A link in the settings sidebar. Shell and modules both use it. */
-export type IMenuSettingItem = IMenuItem & {
+/**
+ * A link in the settings sidebar. Shell and modules both use it.
+ * `preview` is omitted: a Preview badge belongs on the settings page, not in this list.
+ */
+export type IMenuSettingItem = Omit<IMenuItem, 'preview'> & {
 	/**
 	 * @description Sort position inside the section, low to high. Shell links use 10, 20, 30, ...
 	 * in each section, so pick a number between two of them to land between them. No `order`

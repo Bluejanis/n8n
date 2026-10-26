@@ -1,4 +1,5 @@
 import { render } from '@testing-library/vue';
+import userEvent from '@testing-library/user-event';
 import { mount } from '@vue/test-utils';
 
 import N8nBadge from '../N8nBadge';
@@ -12,6 +13,19 @@ describe('PreviewBadge', () => {
 			variant: 'outline',
 			size: 'small',
 		});
+	});
+
+	it('explains Preview and links to the feature docs', async () => {
+		const { getByText, findByRole } = render(PreviewBadge, {
+			props: { docsUrl: 'https://docs.n8n.io/build/build-and-manage-agents' },
+		});
+
+		await userEvent.tab();
+		expect(getByText('Preview').closest('.n8n-badge')).toHaveFocus();
+		expect(await findByRole('link', { name: 'Learn more' })).toHaveAttribute(
+			'href',
+			'https://docs.n8n.io/build/build-and-manage-agents',
+		);
 	});
 
 	it('renders custom text instead of the default label', () => {

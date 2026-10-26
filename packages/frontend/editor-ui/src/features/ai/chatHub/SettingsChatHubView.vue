@@ -129,21 +129,26 @@ onMounted(async () => {
 </script>
 <template>
 	<div :class="$style.container">
-		<div :class="$style.titleWithTag">
-			<N8nHeading size="2xlarge">
-				{{ i18n.baseText('settings.chatHub') }}
-			</N8nHeading>
-			<N8nPreviewBadge size="xsmall" data-test-id="chat-hub-preview-badge" />
-			<N8nEnterpriseReadinessBadge
-				v-if="settingsStore.isEnterprisePlan"
-				size="xsmall"
-				data-test-id="chat-hub-enterprise-readiness-badge"
-			/>
-		</div>
+		<N8nHeading size="2xlarge">
+			{{ i18n.baseText('settings.chatHub') }}
+		</N8nHeading>
 
 		<label :class="$style.enabledRow">
 			<div :class="$style.enabledText">
-				<N8nText bold>{{ i18n.baseText('settings.chatHub.enabled.label') }}</N8nText>
+				<span :class="$style.titleWithTag">
+					<N8nText bold>{{ i18n.baseText('settings.chatHub.enabled.label') }}</N8nText>
+					<N8nPreviewBadge
+						size="xxsmall"
+						docs-url="https://docs.n8n.io/advanced-ai/chat-hub/"
+						data-test-id="chat-hub-preview-badge"
+					/>
+					<N8nEnterpriseReadinessBadge
+						v-if="settingsStore.isEnterprisePlan"
+						size="xxsmall"
+						docs-url="https://docs.n8n.io/advanced-ai/chat-hub/"
+						data-test-id="chat-hub-enterprise-readiness-badge"
+					/>
+				</span>
 				<N8nText size="small" color="text-light">
 					{{ i18n.baseText('settings.chatHub.enabled.description') }}
 				</N8nText>

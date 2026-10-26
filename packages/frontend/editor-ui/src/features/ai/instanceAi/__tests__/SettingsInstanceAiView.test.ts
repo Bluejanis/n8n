@@ -278,12 +278,17 @@ describe('SettingsInstanceAiView', () => {
 	});
 
 	describe('page header', () => {
-		it('shows the limited enterprise support badge next to the title on enterprise', () => {
+		it('shows the limited enterprise support badge on the enable row on enterprise', async () => {
 			setPlanName(settingsStore, 'Enterprise');
 
-			const { getByRole, getByTestId } = renderComponent();
-			const title = getByRole('heading', { name: 'settings.n8nAgent' });
-			expect(title.parentElement).toContainElement(
+			const { findByText, getByRole, getByTestId } = renderComponent();
+			await waitFor(() => expect(store.isLoading).toBe(false));
+			const label = await findByText('settings.n8nAgent.enable.label');
+
+			expect(label.parentElement).toContainElement(
+				getByTestId('n8n-agent-enterprise-readiness-badge'),
+			);
+			expect(getByRole('heading', { name: 'settings.n8nAgent' })).not.toContainElement(
 				getByTestId('n8n-agent-enterprise-readiness-badge'),
 			);
 		});

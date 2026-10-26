@@ -135,6 +135,10 @@ const neverConfigured = computed(() => {
 	if (!isSelfManaged.value || !store.settings) return true;
 	return !isModelConfigured.value && !isSandboxConfigured.value && searchState.value === 'notset';
 });
+const showEnterpriseBadgeOnEnableRow = computed(
+	() =>
+		settingsStore.isEnterprisePlan && isAdmin.value && !store.isLoading && !neverConfigured.value,
+);
 
 const emptyStateIcon: EmptyStateIconCards = {
 	type: 'cards',
@@ -496,9 +500,13 @@ async function handleDataSharingToggle(value: boolean) {
 			:docs-url="DOCS_URL"
 			:docs-label="i18n.baseText('settings.n8nAgent.docsLabel')"
 		>
-			<template v-if="settingsStore.isEnterprisePlan" #titleTrailing>
+			<template
+				v-if="settingsStore.isEnterprisePlan && !showEnterpriseBadgeOnEnableRow"
+				#titleTrailing
+			>
 				<N8nEnterpriseReadinessBadge
 					size="xsmall"
+					:docs-url="DOCS_URL"
 					data-test-id="n8n-agent-enterprise-readiness-badge"
 				/>
 			</template>
@@ -530,6 +538,13 @@ async function handleDataSharingToggle(value: boolean) {
 						:title="i18n.baseText('settings.n8nAgent.enable.label')"
 						:description="i18n.baseText('settings.n8nAgent.enable.description')"
 					>
+						<template v-if="showEnterpriseBadgeOnEnableRow" #titleTrailing>
+							<N8nEnterpriseReadinessBadge
+								size="xxsmall"
+								:docs-url="DOCS_URL"
+								data-test-id="n8n-agent-enterprise-readiness-badge"
+							/>
+						</template>
 						<template #action>
 							<N8nButton
 								v-if="isOff"

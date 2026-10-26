@@ -93,6 +93,14 @@ beforeEach(() => {
 	vi.spyOn(useSettingsStore(), 'getModuleSettings').mockResolvedValue(undefined);
 });
 
+it('shows the Preview badge beside the enable switch', async () => {
+	const { findByText, getByRole } = render();
+	const label = await findByText('Enable Agents');
+
+	expect(label.parentElement).toHaveTextContent('Preview');
+	expect(getByRole('heading', { name: 'Agents' })).not.toHaveTextContent('Preview');
+});
+
 it('loads the disabled setting and saves enable and disable choices', async () => {
 	vi.mocked(updateAgentsSettings).mockImplementation(async (_context, settings) => settings);
 	const { findByRole } = render();
