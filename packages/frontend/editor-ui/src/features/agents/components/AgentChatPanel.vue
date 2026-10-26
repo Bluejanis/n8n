@@ -914,6 +914,15 @@ const stopNotice = computed(() => {
 		return 'preparing';
 	return null;
 });
+const preparingSummary = computed(
+	() =>
+		props.backgroundJobsActive &&
+		!hideStoppedStack.value &&
+		!stopNotice.value &&
+		(!currentPlan.value || planFinished.value) &&
+		backgroundJobs.value.length > 0 &&
+		backgroundJobs.value.every((job) => ['completed', 'failed', 'cancelled'].includes(job.status)),
+);
 watch(hideStoppedStack, () => {
 	void restoreTaskStopFocus();
 });
@@ -1692,7 +1701,9 @@ onBeforeUnmount(() => {
 			</N8nCallout>
 		</div>
 
-		<template v-if="displayedMessages.length === 0 && !isStreaming && !stopNotice">
+		<template
+			v-if="displayedMessages.length === 0 && !isStreaming && !stopNotice && !preparingSummary"
+		>
 			<slot name="empty-state">
 				<AgentChatEmptyState :agent-config="agentConfig" />
 			</slot>
@@ -1700,6 +1711,7 @@ onBeforeUnmount(() => {
 		<AgentChatMessageList
 			v-else
 			:messages="displayedMessages"
+			:preparing-summary="preparingSummary"
 			:messaging-state="displayedMessagingState"
 			:project-id="projectId"
 			:agent-id="agentId"
