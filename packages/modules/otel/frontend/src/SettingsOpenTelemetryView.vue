@@ -5,6 +5,7 @@ import { useToast } from '@n8n/composables/useToast';
 import {
 	N8nButton,
 	N8nCheckbox,
+	N8nFeatureMaturityBadges,
 	N8nDialog,
 	N8nDialogBody,
 	N8nDialogClose,
@@ -20,7 +21,9 @@ import {
 	N8nSettingsRowGroup,
 	N8nSettingsSaveBar,
 	N8nSettingsSection,
+	N8nSwitch,
 } from '@n8n/design-system';
+import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
 import { useI18n } from '@n8n/i18n';
 import { useSettingsStore } from '@n8n/stores/settings.store';
 import { computed, ref, watch, onMounted } from 'vue';
@@ -34,7 +37,6 @@ import {
 import { useOtelStore, headersStringToPairs, headersPairsToString } from './otel.store';
 import { createSampleRateFormat, isOtlpProtocol } from './otel.utils';
 import OtelSettingsRow from './OtelSettingsRow.vue';
-import OtelStatusControl from './OtelStatusControl.vue';
 
 const OTEL_DOCS_URL = 'https://docs.n8n.io/hosting/logging-monitoring/opentelemetry/';
 
@@ -44,8 +46,9 @@ const toast = useToast();
 // The shell's wrapper adds a claim guard for `setDocumentTitle`, which only the
 // canvas calls. This view calls `set`, so it uses the platform composable directly
 // and passes the release channel the wrapper would have supplied.
+const settingsStore = useSettingsStore();
 const documentTitle = useDocumentTitle({
-	releaseChannel: useSettingsStore().settings.releaseChannel,
+	releaseChannel: settingsStore.settings.releaseChannel,
 });
 const otelStore = useOtelStore();
 
@@ -440,11 +443,21 @@ watch(
 						:description="statusDescription"
 						:env-tooltip="envTooltip('enabled')"
 					>
+						<template #titleTrailing>
+							<N8nFeatureMaturityBadges
+								v-bind="featureMaturity.openTelemetry"
+								:enterprise-plan="settingsStore.isEnterprisePlan"
+								size="xxsmall"
+								test-id="open-telemetry"
+							/>
+						</template>
 						<template #action>
-							<OtelStatusControl
-								:enabled="displayedEnabled"
-								:disabled="isEnvManaged('enabled') || otelStore.saving"
-								@update:enabled="onToggleEnabled"
+							<N8nSwitch
+								:model-value="displayedEnabled"
+								:disabled="isEnvManaged('enabled') || otelStore.saving || statusSaving"
+								:aria-label="i18n.baseText('settings.opentelemetry.status.label')"
+								data-test-id="otel-enabled-toggle"
+								@update:model-value="onToggleEnabled"
 							/>
 						</template>
 					</OtelSettingsRow>

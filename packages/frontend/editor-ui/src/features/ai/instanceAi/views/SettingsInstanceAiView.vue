@@ -6,7 +6,7 @@ import {
 	N8nCallout,
 	N8nDropdownMenu,
 	N8nEmptyState,
-	N8nEnterpriseReadinessBadge,
+	N8nFeatureMaturityBadges,
 	N8nExternalLink,
 	N8nIcon,
 	N8nLoading,
@@ -24,6 +24,7 @@ import {
 	type DropdownMenuItemProps,
 	type EmptyStateIconCards,
 } from '@n8n/design-system';
+import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
 import {
 	DEFAULT_INSTANCE_AI_PERMISSIONS,
 	type InstanceAiPermissions,
@@ -69,7 +70,6 @@ const {
 	searchState,
 } = useInstanceAiConfiguration();
 
-const DOCS_URL = 'https://docs.n8n.io/deploy/host-n8n/configure-n8n/set-up-n8n-assistant';
 const DATA_SHARING_DOCS_URL =
 	'https://docs.n8n.io/build/ways-of-building-workflows/use-the-ai-assistant#ai-usage-settings';
 
@@ -497,17 +497,18 @@ async function handleDataSharingToggle(value: boolean) {
 		<N8nSettingsPageHeader
 			:title="i18n.baseText('settings.n8nAgent')"
 			:description="i18n.baseText('settings.n8nAgent.description')"
-			:docs-url="DOCS_URL"
+			:docs-url="featureMaturity.assistant.docsUrl"
 			:docs-label="i18n.baseText('settings.n8nAgent.docsLabel')"
 		>
 			<template
 				v-if="settingsStore.isEnterprisePlan && !showEnterpriseBadgeOnEnableRow"
 				#titleTrailing
 			>
-				<N8nEnterpriseReadinessBadge
+				<N8nFeatureMaturityBadges
+					v-bind="featureMaturity.assistant"
+					:enterprise-plan="settingsStore.isEnterprisePlan"
 					size="xsmall"
-					:docs-url="DOCS_URL"
-					data-test-id="n8n-agent-enterprise-readiness-badge"
+					test-id="n8n-agent"
 				/>
 			</template>
 		</N8nSettingsPageHeader>
@@ -539,10 +540,11 @@ async function handleDataSharingToggle(value: boolean) {
 						:description="i18n.baseText('settings.n8nAgent.enable.description')"
 					>
 						<template v-if="showEnterpriseBadgeOnEnableRow" #titleTrailing>
-							<N8nEnterpriseReadinessBadge
+							<N8nFeatureMaturityBadges
+								v-bind="featureMaturity.assistant"
+								:enterprise-plan="settingsStore.isEnterprisePlan"
 								size="xxsmall"
-								:docs-url="DOCS_URL"
-								data-test-id="n8n-agent-enterprise-readiness-badge"
+								test-id="n8n-agent"
 							/>
 						</template>
 						<template #action>

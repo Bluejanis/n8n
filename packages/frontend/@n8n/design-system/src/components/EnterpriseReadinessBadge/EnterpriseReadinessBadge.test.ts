@@ -37,9 +37,13 @@ describe('EnterpriseReadinessBadge', () => {
 
 		await userEvent.tab();
 
-		expect(await findByRole('link', { name: 'Learn more' })).toHaveAttribute(
+		const link = await findByRole('link', { name: 'Learn more' });
+		expect(link).toHaveAttribute(
 			'href',
 			'https://docs.n8n.io/deploy/host-n8n/configure-n8n/set-up-n8n-assistant',
+		);
+		expect(link.closest('p')).toHaveTextContent(
+			"Some enterprise capabilities don't cover this feature yet. Learn more",
 		);
 	});
 });

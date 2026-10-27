@@ -25,16 +25,19 @@ const { t } = useI18n();
 			{{ t('enterpriseReadinessBadge.limited') }}
 		</N8nBadge>
 		<template #content>
-			<span>{{ t('enterpriseReadinessBadge.tooltip') }}</span>
-			<a
-				v-if="docsUrl"
-				:class="$style.docsLink"
-				:href="docsUrl"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				{{ t('maturityBadge.docsLink') }}
-			</a>
+			<!-- The tooltip content is a centered column. One paragraph keeps the link in the sentence. -->
+			<p :class="$style.tooltipCopy">
+				{{ t('enterpriseReadinessBadge.tooltip') }}
+				<a
+					v-if="docsUrl"
+					:class="$style.docsLink"
+					:href="docsUrl"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{{ t('maturityBadge.docsLink') }}
+				</a>
+			</p>
 		</template>
 	</N8nTooltip>
 </template>
@@ -49,6 +52,12 @@ const { t } = useI18n();
 	&:focus-visible {
 		@include focus.focus-ring-with-border;
 	}
+}
+
+.tooltipCopy {
+	margin: 0;
+	align-self: stretch;
+	line-height: inherit;
 }
 
 .docsLink {

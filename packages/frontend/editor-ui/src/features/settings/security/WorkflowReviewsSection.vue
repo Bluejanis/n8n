@@ -1,7 +1,13 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { ElSwitch } from 'element-plus';
-import { N8nAlertDialog, N8nPreviewBadge, N8nSettingsRow, N8nText } from '@n8n/design-system';
+import {
+	N8nAlertDialog,
+	N8nFeatureMaturityBadges,
+	N8nSettingsRow,
+	N8nText,
+} from '@n8n/design-system';
+import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
 import { useI18n } from '@n8n/i18n';
 import { useRootStore } from '@n8n/stores/useRootStore';
 import * as securitySettingsApi from '@n8n/rest-api-client/api/security-settings';
@@ -74,7 +80,12 @@ function confirmDisable() {
 				<N8nText :bold="true">
 					{{ i18n.baseText('settings.security.workflowReviews.enable.title') }}
 				</N8nText>
-				<N8nPreviewBadge size="xxsmall" data-test-id="security-workflow-reviews-preview-tag" />
+				<N8nFeatureMaturityBadges
+					v-bind="featureMaturity.workflowReviews"
+					:enterprise-plan="settingsStore.isEnterprisePlan"
+					size="xxsmall"
+					test-id="security-workflow-reviews"
+				/>
 			</div>
 			<N8nText size="small" color="text-light">
 				{{ i18n.baseText('settings.security.workflowReviews.enable.description') }}

@@ -133,11 +133,14 @@ describe('SettingsChatHubView', () => {
 
 	it('shows the Preview and limited enterprise support badges on the enable row on enterprise', () => {
 		const { getByText, getByTestId } = renderComponent();
-		const labelRow = getByText('Enable Chat').parentElement;
+		const enableRow = getByTestId('chat-hub-enabled-row');
 
-		expect(labelRow).toContainElement(getByTestId('chat-hub-preview-badge'));
-		expect(labelRow).toContainElement(getByTestId('chat-hub-enterprise-readiness-badge'));
-		expect(getByText('Chat')).not.toContainElement(getByTestId('chat-hub-preview-badge'));
+		expect(enableRow.closest('[data-test-id="settings-row-group"]')).not.toBeNull();
+		expect(enableRow).toContainElement(getByTestId('chat-hub-preview-badge'));
+		expect(enableRow).toContainElement(getByTestId('chat-hub-enterprise-readiness-badge'));
+		expect(getByText('Chat').nextElementSibling).toContainElement(
+			getByTestId('chat-hub-preview-badge'),
+		);
 		expect(getByTestId('chat-hub-enterprise-readiness-badge')).toHaveTextContent(
 			'Limited enterprise support',
 		);

@@ -115,6 +115,17 @@ describe('SettingsOpenTelemetryView', () => {
 		expect(queryByTestId('otel-exporter-endpoint')).not.toBeInTheDocument();
 	});
 
+	it('shows the Preview badge on the status row', async () => {
+		const { getByTestId, getByRole } = render();
+
+		await waitFor(() => {
+			expect(getByTestId('open-telemetry-preview-badge')).toBeInTheDocument();
+		});
+		expect(getByRole('heading', { name: 'OpenTelemetry' })).not.toContainElement(
+			getByTestId('open-telemetry-preview-badge'),
+		);
+	});
+
 	it('renders all settings fields after fetch completes', async () => {
 		const { getByTestId } = render();
 
@@ -184,7 +195,9 @@ describe('SettingsOpenTelemetryView', () => {
 
 		await userEvent.click(getByTestId('otel-enabled-toggle'));
 
-		await waitFor(() => expect(getByTestId('otel-enabled-toggle')).toHaveTextContent('Enabled'));
+		await waitFor(() =>
+			expect(getByTestId('otel-enabled-toggle')).toHaveAttribute('aria-checked', 'true'),
+		);
 		expect(getByText(/Tracing is on/)).toBeInTheDocument();
 		expect(queryByTestId('settings-save-bar')).not.toBeInTheDocument();
 	});
@@ -324,12 +337,10 @@ describe('SettingsOpenTelemetryView', () => {
 		getOtelSettingsMock.mockResolvedValue(makeSettings({ enabled: true }));
 		updateOtelSettingsMock.mockResolvedValue(makeSettings({ enabled: false }));
 
-		const { getByTestId, getByText } = render();
+		const { getByTestId } = render();
 		await waitFor(() => expect(getByTestId('otel-enabled-toggle')).toBeInTheDocument());
 
 		await userEvent.click(getByTestId('otel-enabled-toggle'));
-		await waitFor(() => expect(getByText('Disable')).toBeInTheDocument());
-		await userEvent.click(getByText('Disable'));
 
 		await waitFor(() => {
 			expect(telemetryTrack).toHaveBeenCalledWith('Disabled otel via UI');

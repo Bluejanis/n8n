@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import type { AgentsSettingsDto } from '@n8n/api-types';
+import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
 import {
 	N8nButton,
+	N8nFeatureMaturityBadges,
 	N8nLoading,
-	N8nPreviewBadge,
 	N8nSettingsLayout,
 	N8nSettingsPageHeader,
 	N8nSettingsRow,
@@ -82,7 +83,12 @@ onMounted(async () => {
 					:max-description-lines="3"
 				>
 					<template #titleTrailing>
-						<N8nPreviewBadge size="xxsmall" />
+						<N8nFeatureMaturityBadges
+							v-bind="featureMaturity.agents"
+							:enterprise-plan="settingsStore.isEnterprisePlan"
+							size="xxsmall"
+							test-id="agents"
+						/>
 					</template>
 					<template #action>
 						<N8nSwitch

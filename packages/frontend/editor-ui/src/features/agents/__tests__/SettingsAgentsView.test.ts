@@ -94,11 +94,27 @@ beforeEach(() => {
 });
 
 it('shows the Preview badge beside the enable switch', async () => {
-	const { findByText, getByRole } = render();
-	const label = await findByText('Enable Agents');
+	const { findByTestId, getByRole, queryByTestId } = render();
+	const badge = await findByTestId('agents-preview-badge');
+	const heading = getByRole('heading', { name: 'Agents' });
 
-	expect(label.parentElement).toHaveTextContent('Preview');
-	expect(getByRole('heading', { name: 'Agents' })).not.toHaveTextContent('Preview');
+	expect(badge.closest('[data-test-id="settings-row-group"]')).not.toBeNull();
+	expect(heading.parentElement).not.toContainElement(badge);
+	expect(queryByTestId('agents-enterprise-readiness-badge')).not.toBeInTheDocument();
+});
+
+it('shows limited enterprise support beside Preview on an enterprise plan', async () => {
+	useSettingsStore().$patch({
+		settings: { license: { planName: 'Enterprise' } },
+	});
+
+	const { findByTestId, getByRole } = render();
+	const badge = await findByTestId('agents-enterprise-readiness-badge');
+	const heading = getByRole('heading', { name: 'Agents' });
+
+	expect(badge).toHaveTextContent('Limited enterprise support');
+	expect(badge.closest('[data-test-id="settings-row-group"]')).not.toBeNull();
+	expect(heading.parentElement).not.toContainElement(badge);
 });
 
 it('loads the disabled setting and saves enable and disable choices', async () => {

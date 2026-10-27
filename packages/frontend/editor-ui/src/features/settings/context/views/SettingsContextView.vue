@@ -3,8 +3,10 @@ import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n, type BaseTextKey } from '@n8n/i18n';
 import { useToast } from '@n8n/composables/useToast';
+import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
+import { useSettingsStore } from '@n8n/stores/settings.store';
 import {
-	N8nPreviewBadge,
+	N8nFeatureMaturityBadges,
 	N8nSettingsLayout,
 	N8nSettingsPageHeader,
 	N8nSettingsRow,
@@ -20,6 +22,7 @@ import { isContextPreferencesEnabled, isContextSkillsEnabled } from '../context.
 import { useSkillsStore } from '../skills.store';
 
 const i18n = useI18n();
+const settingsStore = useSettingsStore();
 const router = useRouter();
 const documentTitle = useDocumentTitle();
 const contextStore = useContextStore();
@@ -85,7 +88,12 @@ onMounted(async () => {
 			:show-docs-link="false"
 		>
 			<template #titleTrailing>
-				<N8nPreviewBadge size="xsmall" />
+				<N8nFeatureMaturityBadges
+					v-bind="featureMaturity.context"
+					:enterprise-plan="settingsStore.isEnterprisePlan"
+					size="xsmall"
+					test-id="settings-context"
+				/>
 			</template>
 		</N8nSettingsPageHeader>
 
