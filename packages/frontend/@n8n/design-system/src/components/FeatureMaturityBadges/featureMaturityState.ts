@@ -3,8 +3,13 @@ import {
 	type FeatureMaturity,
 	type FeatureMaturityId,
 } from '@n8n/frontend-constants/feature-maturity';
-import { useSettingsStore } from '@n8n/stores/settings.store';
-import { computed, type ComputedRef } from 'vue';
+import { computed, inject, type ComputedRef, type InjectionKey } from 'vue';
+
+/**
+ * The app provides this. True when the instance is on an enterprise plan.
+ * A component that renders outside the app reads false.
+ */
+export const EnterprisePlanKey: InjectionKey<ComputedRef<boolean>> = Symbol('EnterprisePlan');
 
 /**
  * Keeps the test ids that pages already use. A new feature id becomes kebab-case.
@@ -27,15 +32,10 @@ export function readFeatureMaturity(id: FeatureMaturityId): FeatureMaturity {
 	return featureMaturity[id];
 }
 
-/** False when this component renders outside an app that has Pinia. */
+/** The plan provided by the app. False when the app provided none. */
 export function useEnterprisePlan(): ComputedRef<boolean> {
-	try {
-		const settingsStore = useSettingsStore();
-		return computed(() => settingsStore.isEnterprisePlan);
-	} catch (error) {
-		if (error instanceof Error && error.message.includes('no active Pinia')) {
-			return computed(() => false);
-		}
-		throw error;
-	}
+	return inject(
+		EnterprisePlanKey,
+		computed(() => false),
+	);
 }

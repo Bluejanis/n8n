@@ -1,17 +1,20 @@
-import { useSettingsStore } from '@n8n/stores/settings.store';
 import { render } from '@testing-library/vue';
 import userEvent from '@testing-library/user-event';
-import { createPinia, setActivePinia } from 'pinia';
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 
+import { EnterprisePlanKey } from '../FeatureMaturityBadges/featureMaturityState';
 import N8nSettingsEnableRow from './SettingsEnableRow.vue';
 import N8nSettingsPageHeader from '../N8nSettingsPageHeader/SettingsPageHeader.vue';
 
-describe('N8nSettingsEnableRow', () => {
-	beforeEach(() => {
-		setActivePinia(createPinia());
-	});
+const enterprisePlan = {
+	global: {
+		provide: {
+			[EnterprisePlanKey as symbol]: computed(() => true),
+		},
+	},
+};
 
+describe('N8nSettingsEnableRow', () => {
 	it('renders the title, the switch, and the feature badges', () => {
 		const { getByRole, getByTestId, queryByTestId } = render(N8nSettingsEnableRow, {
 			props: {
@@ -39,12 +42,6 @@ describe('N8nSettingsEnableRow', () => {
 	});
 
 	it('renders badges only on the part that sets showBadges', () => {
-		useSettingsStore().settings.license = {
-			planName: 'Enterprise',
-			consumerId: 'test',
-			environment: 'development',
-		};
-
 		const Page = defineComponent({
 			components: { N8nSettingsPageHeader, N8nSettingsEnableRow },
 			setup() {
@@ -62,7 +59,7 @@ describe('N8nSettingsEnableRow', () => {
 			`,
 		});
 
-		const { getAllByTestId, getByRole } = render(Page);
+		const { getAllByTestId, getByRole } = render(Page, enterprisePlan);
 
 		const badges = getAllByTestId('n8n-agent-enterprise-readiness-badge');
 		expect(badges).toHaveLength(1);

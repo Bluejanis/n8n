@@ -10,7 +10,6 @@
 			"@n8n/composables*": ["../composables/src*"],
 			"@n8n/frontend-constants*": ["../frontend-constants/src*"],
 			"@n8n/frontend-utils*": ["../frontend-utils/src*"],
-			"@n8n/stores*": ["../stores/src*"],
 			"@n8n/utils*": ["../../../@n8n/utils/src*"]
 		}
 	},

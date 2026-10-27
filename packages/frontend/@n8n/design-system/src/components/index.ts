@@ -142,6 +142,7 @@ export { default as N8nPreviewBadge } from './PreviewBadge/PreviewBadge.vue';
 /** Internal badge. Render it through `N8nFeatureMaturityBadges`. */
 export { default as N8nEnterpriseReadinessBadge } from './EnterpriseReadinessBadge/EnterpriseReadinessBadge.vue';
 export { default as N8nFeatureMaturityBadges } from './FeatureMaturityBadges/FeatureMaturityBadges.vue';
+export { EnterprisePlanKey } from './FeatureMaturityBadges/featureMaturityState';
 export { default as N8nNewBadge } from './NewBadge/NewBadge.vue';
 export { default as N8nPopover } from './N8nPopover';
 export { default as N8nPopoverReka } from './N8nPopover'; // Alias for backwards compatibility

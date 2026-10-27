@@ -1,8 +1,16 @@
-import { useSettingsStore } from '@n8n/stores/settings.store';
-import { createPinia, setActivePinia } from 'pinia';
 import { render, screen } from '@testing-library/vue';
+import { computed } from 'vue';
 
+import { EnterprisePlanKey } from '../FeatureMaturityBadges/featureMaturityState';
 import N8nSettingsPageHeader from './SettingsPageHeader.vue';
+
+const enterprisePlan = {
+	global: {
+		provide: {
+			[EnterprisePlanKey as symbol]: computed(() => true),
+		},
+	},
+};
 
 describe('N8nSettingsPageHeader', () => {
 	it('renders the title as an h1 by default', () => {
@@ -14,7 +22,6 @@ describe('N8nSettingsPageHeader', () => {
 	});
 
 	it('renders feature badges beside the title', () => {
-		setActivePinia(createPinia());
 		render(N8nSettingsPageHeader, {
 			props: { title: 'Context', feature: 'context', showBadges: true, showDocsLink: false },
 		});
@@ -28,13 +35,8 @@ describe('N8nSettingsPageHeader', () => {
 	});
 
 	it('uses the feature docs page when the header has no docsUrl', () => {
-		setActivePinia(createPinia());
-		useSettingsStore().settings.license = {
-			planName: 'Enterprise',
-			consumerId: 'test',
-			environment: 'development',
-		};
 		render(N8nSettingsPageHeader, {
+			...enterprisePlan,
 			props: {
 				title: 'Assistant',
 				description: 'Help people build workflows.',

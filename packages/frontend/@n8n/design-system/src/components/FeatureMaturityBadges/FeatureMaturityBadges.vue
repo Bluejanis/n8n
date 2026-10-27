@@ -37,7 +37,10 @@ const props = withDefaults(
 		limitedEnterpriseSupport?: boolean;
 		/** Documentation page for the enterprise badge tooltip. Ignored when `feature` is set. */
 		docsUrl?: string;
-		/** The instance is on an enterprise plan. Ignored when `feature` is set. */
+		/**
+		 * The instance is on an enterprise plan.
+		 * Overrides the plan the app provides. Omit it to use that plan.
+		 */
 		enterprisePlan?: boolean;
 		/** Badge size. The title placement defaults to `xsmall`. Every other placement defaults to `xxsmall`. */
 		size?: BadgeSize;
@@ -55,13 +58,13 @@ const props = withDefaults(
 		previewText: undefined,
 		limitedEnterpriseSupport: false,
 		docsUrl: undefined,
-		enterprisePlan: false,
+		enterprisePlan: undefined,
 		size: undefined,
 		testId: undefined,
 	},
 );
 
-const enterpriseFromStore = useEnterprisePlan();
+const providedEnterprisePlan = useEnterprisePlan();
 
 const entry = computed(() => (props.feature ? readFeatureMaturity(props.feature) : undefined));
 const resolvedPreview = computed(() => entry.value?.preview ?? props.preview);
@@ -69,9 +72,7 @@ const resolvedLimitedEnterpriseSupport = computed(
 	() => entry.value?.limitedEnterpriseSupport ?? props.limitedEnterpriseSupport,
 );
 const resolvedDocsUrl = computed(() => entry.value?.docsUrl ?? props.docsUrl);
-const resolvedEnterprisePlan = computed(() =>
-	props.feature ? enterpriseFromStore.value : props.enterprisePlan,
-);
+const resolvedEnterprisePlan = computed(() => props.enterprisePlan ?? providedEnterprisePlan.value);
 const resolvedTestId = computed(
 	() => props.testId ?? (props.feature ? featureMaturityTestId(props.feature) : undefined),
 );
