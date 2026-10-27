@@ -213,20 +213,7 @@ export class SourceControlPreferencesService {
 			keyPairType =
 				this.getPreferences().keyGeneratorType ?? this.sourceControlConfig.defaultKeyPairType;
 		}
-		const keyPair = await generateSshKeyPair(keyPairType);
-
-		try {
-			await this.settingsRepository.save({
-				key: 'features.sourceControl.sshKeys',
-				value: JSON.stringify({
-					encryptedPrivateKey: await this.cipher.encryptV2(keyPair.privateKey),
-					publicKey: keyPair.publicKey,
-				}),
-				loadOnStartup: true,
-			});
-		} catch (error) {
-			throw new UnexpectedError('Failed to write key pair to database', { cause: error });
-		}
+		await this.saveKeyPair(keyPairType, true);
 
 		// update preferences only after generating key pair to prevent endless loop
 		if (keyPairType !== this.getPreferences().keyGeneratorType) {
@@ -234,6 +221,29 @@ export class SourceControlPreferencesService {
 		}
 
 		return this.getPreferences();
+	}
+
+	private async saveKeyPair(keyPairType: KeyPairType, overwrite: boolean): Promise<void> {
+		const keyPair = await generateSshKeyPair(keyPairType);
+
+		try {
+			const value = JSON.stringify({
+				encryptedPrivateKey: await this.cipher.encryptV2(keyPair.privateKey),
+				publicKey: keyPair.publicKey,
+			});
+			if (overwrite) {
+				await this.settingsRepository.save({
+					key: 'features.sourceControl.sshKeys',
+					value,
+					loadOnStartup: true,
+				});
+			} else {
+				// Concurrent mains must keep the first key pair stored in the database.
+				await this.settingsRepository.insertIfAbsent('features.sourceControl.sshKeys', value, true);
+			}
+		} catch (error) {
+			throw new UnexpectedError('Failed to write key pair to database', { cause: error });
+		}
 	}
 
 	isBranchReadOnly(): boolean {
@@ -280,6 +290,7 @@ export class SourceControlPreferencesService {
 		saveToDb = true,
 		broadcastReload = true,
 	): Promise<SourceControlPreferences> {
+		const sanitizedPreferences = { ...preferences };
 		const noKeyPair = (await this.getKeyPairFromDatabase()) === null;
 
 		// Generate SSH key pair for SSH connections or when connectionType is undefined for backward compatibility
@@ -287,10 +298,13 @@ export class SourceControlPreferencesService {
 			noKeyPair &&
 			(preferences.connectionType === 'ssh' || preferences.connectionType === undefined)
 		) {
-			await this.generateAndSaveKeyPair();
+			const keyPairType =
+				preferences.keyGeneratorType ??
+				this.getPreferences().keyGeneratorType ??
+				this.sourceControlConfig.defaultKeyPairType;
+			await this.saveKeyPair(keyPairType, false);
+			sanitizedPreferences.keyGeneratorType = keyPairType;
 		}
-
-		const sanitizedPreferences = { ...preferences };
 
 		if (preferences.httpsUsername && preferences.httpsPassword) {
 			await this.saveHttpsCredentials(preferences.httpsUsername, preferences.httpsPassword);
@@ -338,9 +352,28 @@ export class SourceControlPreferencesService {
 	async loadFromDbAndApplySourceControlPreferences(): Promise<
 		SourceControlPreferences | undefined
 	> {
-		const loadedPreferences = await this.settingsRepository.findOne({
+		let loadedPreferences = await this.settingsRepository.findOne({
 			where: { key: SOURCE_CONTROL_PREFERENCES_DB_KEY },
 		});
+		if (!loadedPreferences) {
+			const defaults = new SourceControlPreferences({
+				environmentsVersion: 'v2',
+				keyGeneratorType: this.sourceControlConfig.defaultKeyPairType,
+			});
+			try {
+				await this.settingsRepository.insertIfAbsent(
+					SOURCE_CONTROL_PREFERENCES_DB_KEY,
+					JSON.stringify(defaults),
+					true,
+				);
+			} catch (error) {
+				throw new UnexpectedError('Failed to save source control preferences', { cause: error });
+			}
+			// Apply the stored preferences if another main initialized them first.
+			loadedPreferences = await this.settingsRepository.findOne({
+				where: { key: SOURCE_CONTROL_PREFERENCES_DB_KEY },
+			});
+		}
 		let preferences: SourceControlPreferences | undefined;
 		if (loadedPreferences) {
 			try {
