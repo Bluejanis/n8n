@@ -42,15 +42,16 @@ export type SkillRef = { id: string; versionId?: string };
 /**
  * Fields to change, plus the hash of the version the editor started from. Omitted
  * `frontmatter` keeps the frontmatter of the latest version. `baseSkillHash` leaves out
- * the frontmatter, so a caller that sets it also passes `baseVersionId`. With
+ * the frontmatter, so the type requires `baseVersionId` when `frontmatter` is set. With
  * `checkedTarget`, the save is refused if the skill left the scope the caller checked.
  */
 export type SkillUpdate = Partial<AgentSkill> & {
 	baseSkillHash: string;
-	frontmatter?: SkillFrontmatter | null;
-	baseVersionId?: string;
 	checkedTarget?: SkillTarget;
-};
+} & (
+		| { frontmatter?: undefined; baseVersionId?: string }
+		| { frontmatter: SkillFrontmatter | null; baseVersionId: string }
+	);
 
 export type SkillSaveResult = {
 	versionId: string;
