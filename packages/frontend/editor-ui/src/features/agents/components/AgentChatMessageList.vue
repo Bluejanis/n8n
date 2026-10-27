@@ -995,10 +995,6 @@ watch(
 	}
 }
 
-.assistant {
-	padding-inline: var(--spacing--xs);
-}
-
 .message {
 	padding-top: var(--spacing--4xs);
 }

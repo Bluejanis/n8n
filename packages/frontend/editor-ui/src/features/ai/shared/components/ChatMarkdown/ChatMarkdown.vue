@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { N8nCodeBlock, N8nMarkdown } from '@n8n/design-system';
+import ChatResourceLink from './ChatResourceLink.vue';
+import { getResourceLinkIcon } from './resourceLinks';
 import { useChatMarkdownOptions, type ChatMarkdownOptions } from './useChatMarkdownOptions';
 
 const {
@@ -22,6 +24,16 @@ const markdown = useChatMarkdownOptions(options);
 		:options="markdown.options"
 		:plugins="markdown.plugins.value"
 	>
+		<template #link="link">
+			<ChatResourceLink
+				v-if="getResourceLinkIcon(link.href)"
+				v-bind="link"
+				:icon="getResourceLinkIcon(link.href)"
+			/>
+			<a v-else :href="link.href" :title="link.title" :target="link.target" :rel="link.rel">
+				{{ link.label }}
+			</a>
+		</template>
 		<template #code-block="{ code, language }">
 			<N8nCodeBlock :code="code" :language="language || 'auto'" />
 		</template>
