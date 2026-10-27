@@ -2,15 +2,7 @@
 import { onMounted } from 'vue';
 import { ABOUT_MODAL_KEY } from '@/app/constants';
 
-import {
-	N8nIcon,
-	N8nLink,
-	N8nMenuItem,
-	N8nScrollArea,
-	N8nText,
-	type IMenuItem,
-} from '@n8n/design-system';
-import type { IMenuSettingItem } from '@n8n/frontend-module-sdk';
+import { N8nIcon, N8nLink, N8nMenuItem, N8nScrollArea, N8nText } from '@n8n/design-system';
 import { useSettingsItems } from '../composables/useSettingsItems';
 import { useAiGateway } from '../composables/useAiGateway';
 import { useI18n } from '@n8n/i18n';
@@ -27,11 +19,6 @@ const uiStore = useUIStore();
 
 const { settingsSections, handleSettingsItemSelect } = useSettingsItems();
 const { fetchWallet, isEnabled } = useAiGateway();
-
-/** Menu rows still render a Preview badge from `item.preview`. Settings links must not. */
-function settingsMenuItem(item: IMenuSettingItem): IMenuItem {
-	return { ...item, preview: false };
-}
 
 onMounted(() => {
 	if (isEnabled.value) void fetchWallet();
@@ -70,7 +57,7 @@ onMounted(() => {
 					<N8nMenuItem
 						v-for="item in section.items"
 						:key="item.id"
-						:item="settingsMenuItem(item)"
+						:item="item"
 						@click="handleSettingsItemSelect(item.id)"
 					/>
 				</div>
