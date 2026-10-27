@@ -132,6 +132,7 @@ onMounted(async () => {
 		<N8nSettingsRowGroup>
 			<N8nSettingsEnableRow
 				feature="chat"
+				show-badges
 				:title="i18n.baseText('settings.chatHub.enabled.label')"
 				:description="i18n.baseText('settings.chatHub.enabled.description')"
 				:max-description-lines="3"

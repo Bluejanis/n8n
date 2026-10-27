@@ -4,25 +4,7 @@ import {
 	type FeatureMaturityId,
 } from '@n8n/frontend-constants/feature-maturity';
 import { useSettingsStore } from '@n8n/stores/settings.store';
-import { computed, reactive, type ComputedRef } from 'vue';
-
-/**
- * Enable rows register here. A page title hides its badges while the same
- * feature has an enable row on the page.
- */
-const claimedByEnableRow = reactive(new Set<FeatureMaturityId>());
-
-export function claimFeatureMaturity(id: FeatureMaturityId | undefined): void {
-	if (id) claimedByEnableRow.add(id);
-}
-
-export function releaseFeatureMaturity(id: FeatureMaturityId | undefined): void {
-	if (id) claimedByEnableRow.delete(id);
-}
-
-export function isFeatureMaturityClaimed(id: FeatureMaturityId): boolean {
-	return claimedByEnableRow.has(id);
-}
+import { computed, type ComputedRef } from 'vue';
 
 /**
  * Keeps the test ids that pages already use. A new feature id becomes kebab-case.

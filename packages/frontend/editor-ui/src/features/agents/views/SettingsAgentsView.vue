@@ -76,6 +76,7 @@ onMounted(async () => {
 			<N8nSettingsRowGroup>
 				<N8nSettingsEnableRow
 					feature="agents"
+					show-badges
 					:title="i18n.baseText('settings.agents.enable.label')"
 					:description="i18n.baseText('settings.agents.enable.description')"
 					:max-description-lines="3"

@@ -438,6 +438,7 @@ watch(
 				<N8nSettingsRowGroup>
 					<N8nSettingsEnableRow
 						feature="openTelemetry"
+						show-badges
 						:title="i18n.baseText('settings.opentelemetry.status.label')"
 						:description="statusDescription"
 						:model-value="displayedEnabled"

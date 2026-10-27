@@ -1,8 +1,8 @@
 /**
  * Which features show Preview and Limited enterprise support.
  * Pass an id to `N8nSettingsPageHeader`, `N8nSettingsEnableRow`, or `N8nFeatureMaturityBadges`.
+ * Set `show-badges` on the page title or on the enable row. The badges stay on that part.
  * The page title uses the larger badge. The enable row uses the smaller badge.
- * When a page renders both for the same id, the enable row keeps the badges.
  *
  * Some entries have no settings title yet: OAuth JWE, token exchange, node policies,
  * and the Microsoft Agent 365 trigger. Pass the id when that title exists.

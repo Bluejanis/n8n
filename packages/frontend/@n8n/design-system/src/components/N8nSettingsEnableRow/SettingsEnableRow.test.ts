@@ -2,7 +2,7 @@ import { useSettingsStore } from '@n8n/stores/settings.store';
 import { render } from '@testing-library/vue';
 import userEvent from '@testing-library/user-event';
 import { createPinia, setActivePinia } from 'pinia';
-import { defineComponent, nextTick, ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 import N8nSettingsEnableRow from './SettingsEnableRow.vue';
 import N8nSettingsPageHeader from '../N8nSettingsPageHeader/SettingsPageHeader.vue';
@@ -18,6 +18,7 @@ describe('N8nSettingsEnableRow', () => {
 				title: 'Enable Agents',
 				description: 'Allow users to build and run agents.',
 				feature: 'agents',
+				showBadges: true,
 				modelValue: false,
 			},
 		});
@@ -37,7 +38,7 @@ describe('N8nSettingsEnableRow', () => {
 		expect(emitted()['update:modelValue'][0]).toEqual([true]);
 	});
 
-	it('keeps one set of badges when the page title uses the same feature', async () => {
+	it('renders badges only on the part that sets showBadges', () => {
 		useSettingsStore().settings.license = {
 			planName: 'Enterprise',
 			consumerId: 'test',
@@ -52,12 +53,16 @@ describe('N8nSettingsEnableRow', () => {
 			},
 			template: `
 				<N8nSettingsPageHeader title="Assistant" feature="assistant" :show-docs-link="false" />
-				<N8nSettingsEnableRow v-model="enabled" feature="assistant" title="Enable Assistant" />
+				<N8nSettingsEnableRow
+					v-model="enabled"
+					feature="assistant"
+					show-badges
+					title="Enable Assistant"
+				/>
 			`,
 		});
 
 		const { getAllByTestId, getByRole } = render(Page);
-		await nextTick();
 
 		const badges = getAllByTestId('n8n-agent-enterprise-readiness-badge');
 		expect(badges).toHaveLength(1);

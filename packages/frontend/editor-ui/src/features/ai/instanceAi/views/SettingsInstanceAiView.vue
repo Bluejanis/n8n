@@ -490,6 +490,7 @@ async function handleDataSharingToggle(value: boolean) {
 	<N8nSettingsLayout data-test-id="n8n-agent-settings">
 		<N8nSettingsPageHeader
 			feature="assistant"
+			show-badges
 			:title="i18n.baseText('settings.n8nAgent')"
 			:description="i18n.baseText('settings.n8nAgent.description')"
 			:docs-label="i18n.baseText('settings.n8nAgent.docsLabel')"
@@ -518,7 +519,6 @@ async function handleDataSharingToggle(value: boolean) {
 			<N8nSettingsSection>
 				<N8nSettingsRowGroup>
 					<N8nSettingsEnableRow
-						feature="assistant"
 						:title="i18n.baseText('settings.n8nAgent.enable.label')"
 						:description="i18n.baseText('settings.n8nAgent.enable.description')"
 					>

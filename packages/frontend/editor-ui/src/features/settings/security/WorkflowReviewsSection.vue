@@ -68,6 +68,7 @@ function onToggle(value: boolean) {
 	<div :class="$style.root">
 		<N8nSettingsEnableRow
 			feature="workflowReviews"
+			show-badges
 			:title="i18n.baseText('settings.security.workflowReviews.enable.title')"
 			:description="i18n.baseText('settings.security.workflowReviews.enable.description')"
 			:max-description-lines="3"

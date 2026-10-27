@@ -3,18 +3,15 @@ import {
 	showsFeatureMaturityBadges,
 	type FeatureMaturityId,
 } from '@n8n/frontend-constants/feature-maturity';
-import { computed, onUnmounted, watch } from 'vue';
+import { computed } from 'vue';
 
 import type { BadgeSize } from '../N8nBadge/Badge.type';
 import N8nEnterpriseReadinessBadge from '../EnterpriseReadinessBadge/EnterpriseReadinessBadge.vue';
 import N8nPreviewBadge from '../PreviewBadge/PreviewBadge.vue';
 
 import {
-	claimFeatureMaturity,
 	featureMaturityTestId,
-	isFeatureMaturityClaimed,
 	readFeatureMaturity,
-	releaseFeatureMaturity,
 	useEnterprisePlan,
 } from './featureMaturityState';
 
@@ -28,8 +25,8 @@ const props = withDefaults(
 		 */
 		feature?: FeatureMaturityId;
 		/**
-		 * `title` uses the larger badge and hides when an enable row claims the feature.
-		 * `enable` uses the smaller badge and claims the feature.
+		 * `title` uses the larger badge. `enable` uses the smaller badge.
+		 * The page chooses which component renders the badges.
 		 */
 		placement?: 'title' | 'enable';
 		/** Show the Preview badge. Ignored when `feature` is set. */
@@ -66,20 +63,6 @@ const props = withDefaults(
 
 const enterpriseFromStore = useEnterprisePlan();
 
-// An enable row owns the badges for its feature. The page title steps aside while that row is mounted.
-watch(
-	() => (props.placement === 'enable' ? props.feature : undefined),
-	(feature, previous) => {
-		releaseFeatureMaturity(previous);
-		claimFeatureMaturity(feature);
-	},
-	{ immediate: true },
-);
-
-onUnmounted(() => {
-	if (props.placement === 'enable') releaseFeatureMaturity(props.feature);
-});
-
 const entry = computed(() => (props.feature ? readFeatureMaturity(props.feature) : undefined));
 const resolvedPreview = computed(() => entry.value?.preview ?? props.preview);
 const resolvedLimitedEnterpriseSupport = computed(
@@ -97,17 +80,10 @@ const resolvedSize = computed(
 );
 const resolvedPreviewText = computed(() => (props.feature ? undefined : props.previewText));
 
-const claimedByEnableRow = computed(
-	() =>
-		props.placement === 'title' &&
-		props.feature !== undefined &&
-		isFeatureMaturityClaimed(props.feature),
-);
 const showEnterpriseBadge = computed(
 	() => resolvedLimitedEnterpriseSupport.value && resolvedEnterprisePlan.value,
 );
 const visible = computed(() => {
-	if (claimedByEnableRow.value) return false;
 	if (entry.value) return showsFeatureMaturityBadges(entry.value, resolvedEnterprisePlan.value);
 	return resolvedPreview.value || showEnterpriseBadge.value;
 });

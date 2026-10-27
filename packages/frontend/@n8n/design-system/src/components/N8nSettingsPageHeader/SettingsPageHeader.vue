@@ -31,11 +31,12 @@ export interface SettingsPageHeaderProps {
 	/** Heading element for the page title. */
 	headingTag?: string;
 	/**
-	 * Feature id from `featureMaturity`. The title renders that feature's badges at the larger size.
-	 * The badges move to the enable row when the page also renders `N8nSettingsEnableRow` for this id.
-	 * When the entry has a docs page, that page is the docs link unless `docsUrl` is set.
+	 * Feature id from `featureMaturity`. When the entry has a docs page, that page is the docs link
+	 * unless `docsUrl` is set. Badges render beside the title only when `showBadges` is true.
 	 */
 	feature?: FeatureMaturityId;
+	/** Render this feature's badges beside the title. Leave this off when the enable row shows them. */
+	showBadges?: boolean;
 }
 
 defineOptions({ name: 'N8nSettingsPageHeader' });
@@ -48,6 +49,7 @@ const props = withDefaults(defineProps<SettingsPageHeaderProps>(), {
 	docsLeadingText: undefined,
 	headingTag: 'h1',
 	feature: undefined,
+	showBadges: false,
 });
 
 const slots = useSlots();
@@ -64,7 +66,8 @@ const featureDocsUrl = computed(() =>
 	props.feature ? readFeatureMaturity(props.feature).docsUrl : undefined,
 );
 const resolvedDocsUrl = computed(() => props.docsUrl ?? featureDocsUrl.value);
-const showTitleRow = computed(() => Boolean(props.feature || slots.titleTrailing));
+const showFeatureBadges = computed(() => Boolean(props.showBadges && props.feature));
+const showTitleRow = computed(() => showFeatureBadges.value || Boolean(slots.titleTrailing));
 
 // Default-on means a developer who forgets to wire a docs URL is nudged (not silently broken):
 // the link word still renders as a placeholder and a dev-only warning prompts them to act.
@@ -88,7 +91,7 @@ if (import.meta.env.DEV) {
 			<N8nHeading :tag="headingTag" :class="$style.title" step="xl" color="text-dark">
 				{{ title }}
 			</N8nHeading>
-			<N8nFeatureMaturityBadges v-if="feature" :feature="feature" placement="title" />
+			<N8nFeatureMaturityBadges v-if="showFeatureBadges" :feature="feature" placement="title" />
 			<slot name="titleTrailing" />
 		</div>
 		<N8nHeading v-else :tag="headingTag" :class="$style.title" step="xl" color="text-dark">

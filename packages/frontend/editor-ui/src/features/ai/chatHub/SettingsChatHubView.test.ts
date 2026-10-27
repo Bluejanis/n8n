@@ -2,7 +2,6 @@ import { createComponentRenderer } from '@/__tests__/render';
 import userEvent from '@testing-library/user-event';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { nextTick } from 'vue';
 import { createChatHubModuleSettings } from './__test__/data';
 import SettingsChatHubView from './SettingsChatHubView.vue';
 
@@ -132,9 +131,8 @@ describe('SettingsChatHubView', () => {
 		expect(setChatEnabledMock).toHaveBeenCalledWith(true);
 	});
 
-	it('shows the Preview and limited enterprise support badges on the enable row on enterprise', async () => {
+	it('shows the Preview and limited enterprise support badges on the enable row on enterprise', () => {
 		const { getByRole, getByTestId } = renderComponent();
-		await nextTick();
 
 		const enableRow = getByTestId('chat-hub-enabled-row');
 
@@ -153,11 +151,10 @@ describe('SettingsChatHubView', () => {
 		);
 	});
 
-	it('shows only the Preview badge on other plans', async () => {
+	it('shows only the Preview badge on other plans', () => {
 		settingsState.isEnterprisePlan = false;
 
 		const { getByTestId, queryByTestId } = renderComponent();
-		await nextTick();
 
 		expect(getByTestId('chat-hub-preview-badge')).toBeInTheDocument();
 		expect(queryByTestId('chat-hub-enterprise-readiness-badge')).not.toBeInTheDocument();

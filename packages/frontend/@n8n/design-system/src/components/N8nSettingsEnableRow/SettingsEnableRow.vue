@@ -20,10 +20,12 @@ export interface SettingsEnableRowProps {
 	/** Short description under the title. */
 	description?: string;
 	/**
-	 * Feature id from `featureMaturity`. The row renders that feature's badges at the smaller size.
-	 * The page title hides the same badges while this row is mounted.
+	 * Feature id from `featureMaturity`. The row reads the flags from this id.
+	 * Badges render beside the title only when `showBadges` is true.
 	 */
 	feature?: FeatureMaturityId;
+	/** Render this feature's badges beside the row title. Leave this off when the page title shows them. */
+	showBadges?: boolean;
 	/** Disables the switch. */
 	disabled?: boolean;
 	/** Tooltip shown while the switch is disabled. */
@@ -39,6 +41,7 @@ defineOptions({ name: 'N8nSettingsEnableRow', inheritAttrs: false });
 const props = withDefaults(defineProps<SettingsEnableRowProps>(), {
 	description: undefined,
 	feature: undefined,
+	showBadges: false,
 	disabled: false,
 	disabledTooltip: undefined,
 	switchTestId: undefined,
@@ -48,10 +51,11 @@ const props = withDefaults(defineProps<SettingsEnableRowProps>(), {
 const enabled = defineModel<boolean>({ default: false });
 const enterprisePlan = useEnterprisePlan();
 // Skip the trailing slot when nothing would render, so the title does not keep an empty gap.
-const showBadges = computed(() =>
-	props.feature
-		? showsFeatureMaturityBadges(readFeatureMaturity(props.feature), enterprisePlan.value)
-		: false,
+const renderBadges = computed(
+	() =>
+		props.showBadges &&
+		props.feature !== undefined &&
+		showsFeatureMaturityBadges(readFeatureMaturity(props.feature), enterprisePlan.value),
 );
 </script>
 
@@ -62,7 +66,7 @@ const showBadges = computed(() =>
 		:description="description"
 		:max-description-lines="maxDescriptionLines"
 	>
-		<template v-if="showBadges" #titleTrailing>
+		<template v-if="renderBadges" #titleTrailing>
 			<N8nFeatureMaturityBadges :feature="feature" placement="enable" />
 		</template>
 		<template #action>

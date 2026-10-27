@@ -1,3 +1,4 @@
+import { useSettingsStore } from '@n8n/stores/settings.store';
 import { createPinia, setActivePinia } from 'pinia';
 import { render, screen } from '@testing-library/vue';
 
@@ -15,7 +16,7 @@ describe('N8nSettingsPageHeader', () => {
 	it('renders feature badges beside the title', () => {
 		setActivePinia(createPinia());
 		render(N8nSettingsPageHeader, {
-			props: { title: 'Context', feature: 'context', showDocsLink: false },
+			props: { title: 'Context', feature: 'context', showBadges: true, showDocsLink: false },
 		});
 
 		const title = screen.getByRole('heading', { name: 'Context' });
@@ -28,6 +29,11 @@ describe('N8nSettingsPageHeader', () => {
 
 	it('uses the feature docs page when the header has no docsUrl', () => {
 		setActivePinia(createPinia());
+		useSettingsStore().settings.license = {
+			planName: 'Enterprise',
+			consumerId: 'test',
+			environment: 'development',
+		};
 		render(N8nSettingsPageHeader, {
 			props: {
 				title: 'Assistant',
@@ -40,6 +46,7 @@ describe('N8nSettingsPageHeader', () => {
 			'href',
 			'https://docs.n8n.io/deploy/host-n8n/configure-n8n/set-up-n8n-assistant',
 		);
+		expect(screen.queryByTestId('n8n-agent-enterprise-readiness-badge')).not.toBeInTheDocument();
 	});
 
 	it('renders the titleTrailing slot alongside the title', () => {

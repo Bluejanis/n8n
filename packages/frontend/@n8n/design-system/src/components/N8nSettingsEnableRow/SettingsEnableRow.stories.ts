@@ -11,7 +11,7 @@ const meta = {
 		docs: {
 			description: {
 				component:
-					'The enable control for a settings feature. It renders the title, the description, the switch, and the feature maturity badges. Pass a `feature` id. The row reads the feature list and the instance plan. A page title that uses the same id hides its badges while this row is on the page.',
+					"The enable control for a settings feature. It renders the title, the description, and the switch. Pass a `feature` id and `show-badges` to render that feature's badges beside the title. The row reads the feature list and the instance plan.",
 			},
 		},
 	},
@@ -40,6 +40,7 @@ export const Default: Story = {
 		description:
 			'Allow users to build and run agents. Turning this off blocks new runs and cancels pending messages.',
 		feature: 'agents',
+		showBadges: true,
 		maxDescriptionLines: 3,
 	},
 };
