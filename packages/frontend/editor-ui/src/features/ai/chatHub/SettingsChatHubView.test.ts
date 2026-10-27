@@ -2,6 +2,7 @@ import { createComponentRenderer } from '@/__tests__/render';
 import userEvent from '@testing-library/user-event';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { nextTick } from 'vue';
 import { createChatHubModuleSettings } from './__test__/data';
 import SettingsChatHubView from './SettingsChatHubView.vue';
 
@@ -131,25 +132,32 @@ describe('SettingsChatHubView', () => {
 		expect(setChatEnabledMock).toHaveBeenCalledWith(true);
 	});
 
-	it('shows the Preview and limited enterprise support badges on the enable row on enterprise', () => {
-		const { getByText, getByTestId } = renderComponent();
+	it('shows the Preview and limited enterprise support badges on the enable row on enterprise', async () => {
+		const { getByRole, getByTestId } = renderComponent();
+		await nextTick();
+
 		const enableRow = getByTestId('chat-hub-enabled-row');
 
 		expect(enableRow.closest('[data-test-id="settings-row-group"]')).not.toBeNull();
 		expect(enableRow).toContainElement(getByTestId('chat-hub-preview-badge'));
 		expect(enableRow).toContainElement(getByTestId('chat-hub-enterprise-readiness-badge'));
-		expect(getByText('Chat').nextElementSibling).toContainElement(
+		expect(getByRole('heading', { name: 'Chat' })).not.toContainElement(
 			getByTestId('chat-hub-preview-badge'),
 		);
 		expect(getByTestId('chat-hub-enterprise-readiness-badge')).toHaveTextContent(
 			'Limited enterprise support',
 		);
+		expect(getByTestId('settings-page-header-docs')).toHaveAttribute(
+			'href',
+			'https://docs.n8n.io/advanced-ai/chat-hub/',
+		);
 	});
 
-	it('shows only the Preview badge on other plans', () => {
+	it('shows only the Preview badge on other plans', async () => {
 		settingsState.isEnterprisePlan = false;
 
 		const { getByTestId, queryByTestId } = renderComponent();
+		await nextTick();
 
 		expect(getByTestId('chat-hub-preview-badge')).toBeInTheDocument();
 		expect(queryByTestId('chat-hub-enterprise-readiness-badge')).not.toBeInTheDocument();

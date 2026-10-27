@@ -13,7 +13,12 @@ import {
 	type ChatProviderSettingsDto,
 	PROVIDER_CREDENTIAL_TYPE_MAP,
 } from '@n8n/api-types';
-import { N8nHeading, N8nSettingsEnableRow, N8nSettingsRowGroup, N8nText } from '@n8n/design-system';
+import {
+	N8nSettingsEnableRow,
+	N8nSettingsPageHeader,
+	N8nSettingsRowGroup,
+	N8nText,
+} from '@n8n/design-system';
 import { useI18n } from '@n8n/i18n';
 import { computed, onMounted } from 'vue';
 import { useChatStore } from './chat.store';
@@ -122,9 +127,7 @@ onMounted(async () => {
 </script>
 <template>
 	<div :class="$style.container">
-		<N8nHeading size="2xlarge">
-			{{ i18n.baseText('settings.chatHub') }}
-		</N8nHeading>
+		<N8nSettingsPageHeader feature="chat" :title="i18n.baseText('settings.chatHub')" />
 
 		<N8nSettingsRowGroup>
 			<N8nSettingsEnableRow
