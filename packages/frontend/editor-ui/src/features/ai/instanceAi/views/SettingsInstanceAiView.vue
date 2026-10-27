@@ -6,13 +6,13 @@ import {
 	N8nCallout,
 	N8nDropdownMenu,
 	N8nEmptyState,
-	N8nFeatureMaturityBadges,
 	N8nExternalLink,
 	N8nIcon,
 	N8nLoading,
 	N8nOption,
 	N8nSelect,
 	N8nSettingsLayout,
+	N8nSettingsEnableRow,
 	N8nSettingsPageHeader,
 	N8nSettingsRow,
 	N8nSettingsRowConfigure,
@@ -24,7 +24,6 @@ import {
 	type DropdownMenuItemProps,
 	type EmptyStateIconCards,
 } from '@n8n/design-system';
-import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
 import {
 	DEFAULT_INSTANCE_AI_PERMISSIONS,
 	type InstanceAiPermissions,
@@ -135,11 +134,6 @@ const neverConfigured = computed(() => {
 	if (!isSelfManaged.value || !store.settings) return true;
 	return !isModelConfigured.value && !isSandboxConfigured.value && searchState.value === 'notset';
 });
-const showEnterpriseBadgeOnEnableRow = computed(
-	() =>
-		settingsStore.isEnterprisePlan && isAdmin.value && !store.isLoading && !neverConfigured.value,
-);
-
 const emptyStateIcon: EmptyStateIconCards = {
 	type: 'cards',
 	center: 'sparkles',
@@ -495,23 +489,11 @@ async function handleDataSharingToggle(value: boolean) {
 <template>
 	<N8nSettingsLayout data-test-id="n8n-agent-settings">
 		<N8nSettingsPageHeader
+			feature="assistant"
 			:title="i18n.baseText('settings.n8nAgent')"
 			:description="i18n.baseText('settings.n8nAgent.description')"
-			:docs-url="featureMaturity.assistant.docsUrl"
 			:docs-label="i18n.baseText('settings.n8nAgent.docsLabel')"
-		>
-			<template
-				v-if="settingsStore.isEnterprisePlan && !showEnterpriseBadgeOnEnableRow"
-				#titleTrailing
-			>
-				<N8nFeatureMaturityBadges
-					v-bind="featureMaturity.assistant"
-					:enterprise-plan="settingsStore.isEnterprisePlan"
-					size="xsmall"
-					test-id="n8n-agent"
-				/>
-			</template>
-		</N8nSettingsPageHeader>
+		/>
 
 		<N8nLoading v-if="store.isLoading" :rows="3" :shrink-last="false" />
 
@@ -535,18 +517,11 @@ async function handleDataSharingToggle(value: boolean) {
 		<template v-else-if="isAdmin">
 			<N8nSettingsSection>
 				<N8nSettingsRowGroup>
-					<N8nSettingsRow
+					<N8nSettingsEnableRow
+						feature="assistant"
 						:title="i18n.baseText('settings.n8nAgent.enable.label')"
 						:description="i18n.baseText('settings.n8nAgent.enable.description')"
 					>
-						<template v-if="showEnterpriseBadgeOnEnableRow" #titleTrailing>
-							<N8nFeatureMaturityBadges
-								v-bind="featureMaturity.assistant"
-								:enterprise-plan="settingsStore.isEnterprisePlan"
-								size="xxsmall"
-								test-id="n8n-agent"
-							/>
-						</template>
 						<template #action>
 							<N8nButton
 								v-if="isOff"
@@ -599,7 +574,7 @@ async function handleDataSharingToggle(value: boolean) {
 								</template>
 							</N8nDropdownMenu>
 						</template>
-					</N8nSettingsRow>
+					</N8nSettingsEnableRow>
 
 					<N8nSettingsRow
 						v-if="showCredentialsRows"

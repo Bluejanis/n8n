@@ -1,9 +1,11 @@
 /**
  * Which features show Preview and Limited enterprise support.
- * A page passes one entry to `N8nFeatureMaturityBadges`. The page chooses the slot and the size.
+ * Pass an id to `N8nSettingsPageHeader`, `N8nSettingsEnableRow`, or `N8nFeatureMaturityBadges`.
+ * The page title uses the larger badge. The enable row uses the smaller badge.
+ * When a page renders both for the same id, the enable row keeps the badges.
  *
  * Some entries have no settings title yet: OAuth JWE, token exchange, node policies,
- * and the Microsoft Agent 365 trigger. Add the component when that title exists.
+ * and the Microsoft Agent 365 trigger. Pass the id when that title exists.
  */
 export type FeatureMaturity = {
 	/** Show the Preview badge. */

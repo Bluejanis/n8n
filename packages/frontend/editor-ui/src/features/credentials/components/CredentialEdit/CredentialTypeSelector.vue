@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useI18n } from '@n8n/i18n';
-import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
 import {
 	N8nFeatureMaturityBadges,
 	N8nIcon,
@@ -10,7 +9,6 @@ import {
 	N8nText,
 	N8nTooltip,
 } from '@n8n/design-system';
-import { useSettingsStore } from '@n8n/stores/settings.store';
 import { computed } from 'vue';
 import { END_USER_CREDENTIALS_DOCS_URL } from '@/app/constants';
 
@@ -38,7 +36,6 @@ const emit = defineEmits<{
 }>();
 
 const i18n = useI18n();
-const settingsStore = useSettingsStore();
 
 type CredentialTypeValue = 'fixed' | 'endUser';
 
@@ -72,12 +69,7 @@ function onSelect(value: string): void {
 			<N8nText size="medium" :bold="true">
 				{{ i18n.baseText('credentialEdit.credentialConfig.credentialType.title') }}
 			</N8nText>
-			<N8nFeatureMaturityBadges
-				v-bind="featureMaturity.endUserCredentials"
-				:enterprise-plan="settingsStore.isEnterprisePlan"
-				size="xxsmall"
-				test-id="end-user-credentials"
-			/>
+			<N8nFeatureMaturityBadges feature="endUserCredentials" />
 			<N8nTooltip v-if="infoTip" placement="top">
 				<template #content>
 					<div>

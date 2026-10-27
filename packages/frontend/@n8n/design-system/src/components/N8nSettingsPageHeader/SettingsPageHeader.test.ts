@@ -1,3 +1,4 @@
+import { createPinia, setActivePinia } from 'pinia';
 import { render, screen } from '@testing-library/vue';
 
 import N8nSettingsPageHeader from './SettingsPageHeader.vue';
@@ -9,6 +10,36 @@ describe('N8nSettingsPageHeader', () => {
 		const title = screen.getByText('This instance');
 		expect(title).toBeInTheDocument();
 		expect(title.tagName).toBe('H1');
+	});
+
+	it('renders feature badges beside the title', () => {
+		setActivePinia(createPinia());
+		render(N8nSettingsPageHeader, {
+			props: { title: 'Context', feature: 'context', showDocsLink: false },
+		});
+
+		const title = screen.getByRole('heading', { name: 'Context' });
+		const badge = screen.getByTestId('settings-context-preview-badge');
+		expect(title.parentElement).toContainElement(badge);
+		expect(
+			screen.queryByTestId('settings-context-enterprise-readiness-badge'),
+		).not.toBeInTheDocument();
+	});
+
+	it('uses the feature docs page when the header has no docsUrl', () => {
+		setActivePinia(createPinia());
+		render(N8nSettingsPageHeader, {
+			props: {
+				title: 'Assistant',
+				description: 'Help people build workflows.',
+				feature: 'assistant',
+			},
+		});
+
+		expect(screen.getByRole('link', { name: 'documentation' })).toHaveAttribute(
+			'href',
+			'https://docs.n8n.io/deploy/host-n8n/configure-n8n/set-up-n8n-assistant',
+		);
 	});
 
 	it('renders the titleTrailing slot alongside the title', () => {

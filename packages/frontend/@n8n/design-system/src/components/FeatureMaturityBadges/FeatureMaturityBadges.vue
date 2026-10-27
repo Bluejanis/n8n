@@ -1,56 +1,136 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import {
+	showsFeatureMaturityBadges,
+	type FeatureMaturityId,
+} from '@n8n/frontend-constants/feature-maturity';
+import { computed, onUnmounted, watch } from 'vue';
 
 import type { BadgeSize } from '../N8nBadge/Badge.type';
 import N8nEnterpriseReadinessBadge from '../EnterpriseReadinessBadge/EnterpriseReadinessBadge.vue';
 import N8nPreviewBadge from '../PreviewBadge/PreviewBadge.vue';
 
+import {
+	claimFeatureMaturity,
+	featureMaturityTestId,
+	isFeatureMaturityClaimed,
+	readFeatureMaturity,
+	releaseFeatureMaturity,
+	useEnterprisePlan,
+} from './featureMaturityState';
+
 defineOptions({ name: 'N8nFeatureMaturityBadges' });
 
 const props = withDefaults(
 	defineProps<{
-		/** Show the Preview badge. */
-		preview: boolean;
-		/** The feature lacks full enterprise support. */
-		limitedEnterpriseSupport: boolean;
-		/** Documentation page for the enterprise badge tooltip. */
+		/**
+		 * Feature id from `featureMaturity`. The component reads the flags, the plan,
+		 * and the badge size. Pass this instead of the individual flags.
+		 */
+		feature?: FeatureMaturityId;
+		/**
+		 * `title` uses the larger badge and hides when an enable row claims the feature.
+		 * `enable` uses the smaller badge and claims the feature.
+		 */
+		placement?: 'title' | 'enable';
+		/** Show the Preview badge. Ignored when `feature` is set. */
+		preview?: boolean;
+		/** Label for the Preview badge. Ignored when `feature` is set. */
+		previewText?: string;
+		/** The feature lacks full enterprise support. Ignored when `feature` is set. */
+		limitedEnterpriseSupport?: boolean;
+		/** Documentation page for the enterprise badge tooltip. Ignored when `feature` is set. */
 		docsUrl?: string;
-		/** The instance is on an enterprise plan. */
-		enterprisePlan: boolean;
-		/** Badge size. Use `xxsmall` on a row and `xsmall` on a page title. */
+		/** The instance is on an enterprise plan. Ignored when `feature` is set. */
+		enterprisePlan?: boolean;
+		/** Badge size. The title placement defaults to `xsmall`. Every other placement defaults to `xxsmall`. */
 		size?: BadgeSize;
 		/**
 		 * Prefix for the badge test ids.
 		 * Produces `${testId}-preview-badge` and `${testId}-enterprise-readiness-badge`.
+		 * A `feature` id supplies this when the prop is omitted.
 		 */
 		testId?: string;
 	}>(),
 	{
+		feature: undefined,
+		placement: undefined,
+		preview: false,
+		previewText: undefined,
+		limitedEnterpriseSupport: false,
 		docsUrl: undefined,
-		size: 'xxsmall',
+		enterprisePlan: false,
+		size: undefined,
 		testId: undefined,
 	},
 );
 
-const showEnterpriseBadge = computed(() => props.limitedEnterpriseSupport && props.enterprisePlan);
-const visible = computed(() => props.preview || showEnterpriseBadge.value);
-const previewTestId = computed(() => (props.testId ? `${props.testId}-preview-badge` : undefined));
+const enterpriseFromStore = useEnterprisePlan();
+
+// An enable row owns the badges for its feature. The page title steps aside while that row is mounted.
+watch(
+	() => (props.placement === 'enable' ? props.feature : undefined),
+	(feature, previous) => {
+		releaseFeatureMaturity(previous);
+		claimFeatureMaturity(feature);
+	},
+	{ immediate: true },
+);
+
+onUnmounted(() => {
+	if (props.placement === 'enable') releaseFeatureMaturity(props.feature);
+});
+
+const entry = computed(() => (props.feature ? readFeatureMaturity(props.feature) : undefined));
+const resolvedPreview = computed(() => entry.value?.preview ?? props.preview);
+const resolvedLimitedEnterpriseSupport = computed(
+	() => entry.value?.limitedEnterpriseSupport ?? props.limitedEnterpriseSupport,
+);
+const resolvedDocsUrl = computed(() => entry.value?.docsUrl ?? props.docsUrl);
+const resolvedEnterprisePlan = computed(() =>
+	props.feature ? enterpriseFromStore.value : props.enterprisePlan,
+);
+const resolvedTestId = computed(
+	() => props.testId ?? (props.feature ? featureMaturityTestId(props.feature) : undefined),
+);
+const resolvedSize = computed(
+	() => props.size ?? (props.placement === 'title' ? 'xsmall' : 'xxsmall'),
+);
+const resolvedPreviewText = computed(() => (props.feature ? undefined : props.previewText));
+
+const claimedByEnableRow = computed(
+	() =>
+		props.placement === 'title' &&
+		props.feature !== undefined &&
+		isFeatureMaturityClaimed(props.feature),
+);
+const showEnterpriseBadge = computed(
+	() => resolvedLimitedEnterpriseSupport.value && resolvedEnterprisePlan.value,
+);
+const visible = computed(() => {
+	if (claimedByEnableRow.value) return false;
+	if (entry.value) return showsFeatureMaturityBadges(entry.value, resolvedEnterprisePlan.value);
+	return resolvedPreview.value || showEnterpriseBadge.value;
+});
+const previewTestId = computed(() =>
+	resolvedTestId.value ? `${resolvedTestId.value}-preview-badge` : undefined,
+);
 const enterpriseTestId = computed(() =>
-	props.testId ? `${props.testId}-enterprise-readiness-badge` : undefined,
+	resolvedTestId.value ? `${resolvedTestId.value}-enterprise-readiness-badge` : undefined,
 );
 </script>
 
 <template>
 	<span v-if="visible" :class="$style.badges">
 		<N8nPreviewBadge
-			v-if="preview"
-			:size="size"
+			v-if="resolvedPreview"
+			:size="resolvedSize"
+			:text="resolvedPreviewText"
 			v-bind="previewTestId ? { 'data-test-id': previewTestId } : {}"
 		/>
 		<N8nEnterpriseReadinessBadge
 			v-if="showEnterpriseBadge"
-			:size="size"
-			:docs-url="docsUrl"
+			:size="resolvedSize"
+			:docs-url="resolvedDocsUrl"
 			v-bind="enterpriseTestId ? { 'data-test-id': enterpriseTestId } : {}"
 		/>
 	</span>

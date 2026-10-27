@@ -39,6 +39,8 @@ export type IMenuItem = {
 	notification?: boolean;
 	size?: 'medium' | 'small';
 	new?: boolean;
+	/** Show the Preview badge next to the label. */
+	preview?: boolean;
 	creditsTag?: string;
 };
 

@@ -2,7 +2,6 @@
 import { useDocumentTitle } from '@/app/composables/useDocumentTitle';
 import { useTelemetry } from '@n8n/composables/useTelemetry';
 import { useToast } from '@n8n/composables/useToast';
-import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
 import { useSettingsStore } from '@n8n/stores/settings.store';
 import { useUIStore } from '@/app/stores/ui.store';
 import { useCredentialsStore } from '@/features/credentials/credentials.store';
@@ -14,15 +13,7 @@ import {
 	type ChatProviderSettingsDto,
 	PROVIDER_CREDENTIAL_TYPE_MAP,
 } from '@n8n/api-types';
-import {
-	N8nFeatureMaturityBadges,
-	N8nHeading,
-	N8nSettingsRow,
-	N8nSettingsRowGroup,
-	N8nSwitch,
-	N8nText,
-	N8nTooltip,
-} from '@n8n/design-system';
+import { N8nHeading, N8nSettingsEnableRow, N8nSettingsRowGroup, N8nText } from '@n8n/design-system';
 import { useI18n } from '@n8n/i18n';
 import { computed, onMounted } from 'vue';
 import { useChatStore } from './chat.store';
@@ -136,36 +127,18 @@ onMounted(async () => {
 		</N8nHeading>
 
 		<N8nSettingsRowGroup>
-			<N8nSettingsRow
+			<N8nSettingsEnableRow
+				feature="chat"
 				:title="i18n.baseText('settings.chatHub.enabled.label')"
 				:description="i18n.baseText('settings.chatHub.enabled.description')"
 				:max-description-lines="3"
+				:model-value="isChatEnabled"
+				:disabled="disabled"
+				:disabled-tooltip="i18n.baseText('settings.chatHub.enabled.disabled.tooltip')"
+				switch-test-id="chat-hub-enabled-switch"
 				data-test-id="chat-hub-enabled-row"
-			>
-				<template #titleTrailing>
-					<N8nFeatureMaturityBadges
-						v-bind="featureMaturity.chat"
-						:enterprise-plan="settingsStore.isEnterprisePlan"
-						size="xxsmall"
-						test-id="chat-hub"
-					/>
-				</template>
-				<template #action>
-					<N8nTooltip
-						:content="i18n.baseText('settings.chatHub.enabled.disabled.tooltip')"
-						:disabled="!disabled"
-						placement="top"
-					>
-						<N8nSwitch
-							data-test-id="chat-hub-enabled-switch"
-							:model-value="isChatEnabled"
-							:disabled="disabled"
-							:aria-label="i18n.baseText('settings.chatHub.enabled.label')"
-							@update:model-value="onToggleEnabled"
-						/>
-					</N8nTooltip>
-				</template>
-			</N8nSettingsRow>
+				@update:model-value="onToggleEnabled"
+			/>
 		</N8nSettingsRowGroup>
 
 		<template v-if="settingsStore.isChatFeatureEnabled">

@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import type { AgentsSettingsDto } from '@n8n/api-types';
-import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
 import {
 	N8nButton,
-	N8nFeatureMaturityBadges,
 	N8nLoading,
+	N8nSettingsEnableRow,
 	N8nSettingsLayout,
 	N8nSettingsPageHeader,
-	N8nSettingsRow,
 	N8nSettingsRowGroup,
 	N8nSettingsSection,
-	N8nSwitch,
 } from '@n8n/design-system';
 import { useI18n } from '@n8n/i18n';
 import { useToast } from '@n8n/composables/useToast';
@@ -77,28 +74,15 @@ onMounted(async () => {
 		<N8nLoading v-if="isLoading" :rows="1" :shrink-last="false" />
 		<N8nSettingsSection v-else-if="settings">
 			<N8nSettingsRowGroup>
-				<N8nSettingsRow
+				<N8nSettingsEnableRow
+					feature="agents"
 					:title="i18n.baseText('settings.agents.enable.label')"
 					:description="i18n.baseText('settings.agents.enable.description')"
 					:max-description-lines="3"
-				>
-					<template #titleTrailing>
-						<N8nFeatureMaturityBadges
-							v-bind="featureMaturity.agents"
-							:enterprise-plan="settingsStore.isEnterprisePlan"
-							size="xxsmall"
-							test-id="agents"
-						/>
-					</template>
-					<template #action>
-						<N8nSwitch
-							:model-value="settings.enabled"
-							:disabled="isSaving"
-							:aria-label="i18n.baseText('settings.agents.enable.label')"
-							@update:model-value="saveEnabled"
-						/>
-					</template>
-				</N8nSettingsRow>
+					:model-value="settings.enabled"
+					:disabled="isSaving"
+					@update:model-value="saveEnabled"
+				/>
 			</N8nSettingsRowGroup>
 		</N8nSettingsSection>
 		<N8nButton v-else variant="outline" @click="loadSettings">

@@ -41,6 +41,14 @@ describe('FeatureMaturityBadges', () => {
 		);
 	});
 
+	it('uses a custom Preview label when the caller sets one', () => {
+		const { getByText } = render(FeatureMaturityBadges, {
+			props: { preview: true, previewText: 'Early preview' },
+		});
+
+		expect(getByText('Early preview')).toBeInTheDocument();
+	});
+
 	it('renders both badges when the entry asks for both', () => {
 		const { getByTestId } = render(FeatureMaturityBadges, {
 			props: { ...base, preview: true, limitedEnterpriseSupport: true, enterprisePlan: true },

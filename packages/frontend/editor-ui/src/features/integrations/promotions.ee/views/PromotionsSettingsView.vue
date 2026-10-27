@@ -5,7 +5,6 @@ import {
 	N8nButton,
 	N8nEmptyState,
 	N8nExternalLink,
-	N8nFeatureMaturityBadges,
 	N8nLoading2,
 	N8nSettingsLayout,
 	N8nSettingsPageHeader,
@@ -16,11 +15,9 @@ import {
 	N8nText,
 	useMessage,
 } from '@n8n/design-system';
-import { featureMaturity } from '@n8n/frontend-constants/feature-maturity';
 import { useI18n } from '@n8n/i18n';
 import { ResponseError } from '@n8n/rest-api-client';
 import { useRootStore } from '@n8n/stores/useRootStore';
-import { useSettingsStore } from '@n8n/stores/settings.store';
 import { nextTick, onMounted, reactive, ref, type ComponentPublicInstance } from 'vue';
 import { I18nT } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -49,7 +46,6 @@ const toast = useToast();
 const message = useMessage();
 const router = useRouter();
 const rootStore = useRootStore();
-const settingsStore = useSettingsStore();
 const documentTitle = useDocumentTitle();
 const { next: nextLoad } = useLatestFetch();
 const { connectErrors, canClone, connect } = usePromotionCheckout();
@@ -173,19 +169,11 @@ async function remove(environment: PromotionEnvironment) {
 <template>
 	<N8nSettingsLayout :class="$style.layout">
 		<N8nSettingsPageHeader
+			feature="n8nPackages"
 			:title="i18n.baseText('settings.promotions.title')"
 			:description="i18n.baseText('settings.promotions.description')"
 			:show-docs-link="false"
-		>
-			<template #titleTrailing>
-				<N8nFeatureMaturityBadges
-					v-bind="featureMaturity.n8nPackages"
-					:enterprise-plan="settingsStore.isEnterprisePlan"
-					size="xsmall"
-					test-id="n8n-packages"
-				/>
-			</template>
-		</N8nSettingsPageHeader>
+		/>
 
 		<N8nSettingsSection :title="i18n.baseText('settings.promotions.environments.title')">
 			<template #description>

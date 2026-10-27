@@ -4,6 +4,7 @@ import N8nBadge from '../N8nBadge';
 import type { BadgeSize } from '../N8nBadge/Badge.type';
 import N8nTooltip from '../N8nTooltip';
 
+// `N8nFeatureMaturityBadges` is the only caller. A lint rule blocks other Vue files.
 defineOptions({ name: 'N8nEnterpriseReadinessBadge' });
 
 withDefaults(
