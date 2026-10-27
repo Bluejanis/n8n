@@ -19,6 +19,7 @@ import {
 } from './constants';
 import { generateSshKeyPair, isSourceControlLicensed } from './source-control-helper.ee';
 import { SourceControlConfig } from './source-control.config';
+import type { KeyPair } from './types/key-pair';
 import type { KeyPairType } from './types/key-pair-type';
 import { SourceControlPreferences } from './types/source-control-preferences';
 
@@ -213,7 +214,8 @@ export class SourceControlPreferencesService {
 			keyPairType =
 				this.getPreferences().keyGeneratorType ?? this.sourceControlConfig.defaultKeyPairType;
 		}
-		await this.saveKeyPair(keyPairType, true);
+		const keyPair = await generateSshKeyPair(keyPairType);
+		await this.saveKeyPair(keyPair, true);
 
 		// update preferences only after generating key pair to prevent endless loop
 		if (keyPairType !== this.getPreferences().keyGeneratorType) {
@@ -223,9 +225,7 @@ export class SourceControlPreferencesService {
 		return this.getPreferences();
 	}
 
-	private async saveKeyPair(keyPairType: KeyPairType, overwrite: boolean): Promise<void> {
-		const keyPair = await generateSshKeyPair(keyPairType);
-
+	private async saveKeyPair(keyPair: KeyPair, overwrite: boolean): Promise<void> {
 		try {
 			const value = JSON.stringify({
 				encryptedPrivateKey: await this.cipher.encryptV2(keyPair.privateKey),
@@ -302,7 +302,8 @@ export class SourceControlPreferencesService {
 				preferences.keyGeneratorType ??
 				this.getPreferences().keyGeneratorType ??
 				this.sourceControlConfig.defaultKeyPairType;
-			await this.saveKeyPair(keyPairType, false);
+			const keyPair = await generateSshKeyPair(keyPairType);
+			await this.saveKeyPair(keyPair, false);
 			sanitizedPreferences.keyGeneratorType = keyPairType;
 		}
 
