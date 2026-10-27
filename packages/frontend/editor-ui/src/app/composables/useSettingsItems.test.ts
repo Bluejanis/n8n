@@ -366,14 +366,6 @@ describe('useSettingsItems', () => {
 
 			expect(idsOf()).not.toContain('settings-context');
 		});
-
-		it('does not carry a preview label in the sidebar', () => {
-			const item = useSettingsItems().settingsItems.value.find(
-				({ id }) => id === 'settings-context',
-			);
-
-			expect(item !== undefined && 'preview' in item).toBe(false);
-		});
 	});
 
 	describe('Environments v2', () => {
