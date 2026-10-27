@@ -39,7 +39,6 @@ export type SettingsSectionId =
 
 /**
  * A link in the settings sidebar. Shell and modules both use it.
- * `preview` is omitted: a Preview badge belongs on the settings page, not in this list.
  */
 export type IMenuSettingItem = IMenuItem & {
 	/**
